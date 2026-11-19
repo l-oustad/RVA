@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cours RVA – Culture et techniques avancées du numérique</title>
+<style>
+:root{
+  --ink:#16202c; --muted:#5a6676; --line:#dde3ea; --bg:#eef2f6; --card:#fff;
+  --brand:#1F4E79; --brand2:#2e75b6; --soft:#e7f0f9;
+  --ok:#1d7a48; --okbg:#e3f4ea; --ko:#b3352f; --kobg:#fbe9e7; --warn:#a86400; --warnbg:#fff3dc;
+  --note:#fff8d6; --notebd:#e8c95a;
+  --c1:#2f6fb3; --c2:#c2621a; --c3:#7a4fb5; --c4:#0f8a8a;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);font-size:clamp(16px,1.35vw,22px);line-height:1.4}
+button{font-family:inherit;font-size:inherit;cursor:pointer}
+/* ---------- home ---------- */
+#home{max-width:1100px;margin:0 auto;padding:28px 20px}
+.hero{background:linear-gradient(135deg,var(--brand),#163a5c);color:#fff;border-radius:18px;padding:26px 30px}
+.hero small{opacity:.85;font-size:.8em}
+.hero h1{margin:.2em 0 .1em;font-size:1.7em}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:20px}
+.scard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px;text-align:left;display:flex;flex-direction:column;gap:8px;transition:transform .15s, box-shadow .15s}
+.scard:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(20,40,70,.12)}
+.scard .tag{align-self:flex-start;font-size:.7em;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--soft);color:var(--brand)}
+.scard h2{margin:0;font-size:1.1em}
+.scard p{margin:0;color:var(--muted);font-size:.8em}
+.soon{opacity:.55;cursor:default}
+.soon:hover{transform:none;box-shadow:none}
+/* ---------- course ---------- */
+#course{display:none;height:100vh;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:12px;padding:8px 16px;background:var(--brand);color:#fff;font-size:.75em}
+.topbar .t{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar .sp{flex:1}
+.tb{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;padding:5px 11px;font-size:.95em}
+.tb:hover{background:rgba(255,255,255,.25)}
+.tb.on{background:#fff;color:var(--brand)}
+.stage{flex:1;overflow:auto;padding:18px 26px 10px}
+.step{max-width:1250px;margin:0 auto}
+.step h2{font-size:1.55em;margin:.1em 0 .15em;color:var(--brand)}
+.step .lead{color:var(--muted);margin:0 0 .8em}
+.kicker{display:inline-block;font-size:.65em;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:999px;background:var(--soft);color:var(--brand)}
+.bottombar{display:flex;align-items:center;gap:10px;padding:8px 16px;background:#fff;border-top:1px solid var(--line)}
+.nav{border:none;border-radius:10px;padding:9px 20px;font-weight:700;background:var(--brand);color:#fff}
+.nav.prev{background:#fff;color:var(--brand);border:2px solid var(--brand)}
+.nav:disabled{opacity:.35;cursor:default}
+.dots{flex:1;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.dot{width:13px;height:13px;border-radius:50%;background:#cfd8e2;border:none;padding:0}
+.dot.on{background:var(--brand);transform:scale(1.25)}
+.dot.seen{background:#8fb3d6}
+/* ---------- blocks ---------- */
+.box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin:10px 0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.cahier{background:var(--note);border:2px dashed var(--notebd);border-radius:14px;padding:12px 18px;margin:12px 0}
+.cahier h4{margin:0 0 6px;font-size:.85em;color:#7a5d00;text-transform:uppercase;letter-spacing:.05em}
+.cahier ul{margin:.2em 0;padding-left:1.2em}
+.cahier .k{color:#b3352f;font-weight:700}
+.cahier .d{color:#1F4E79;font-weight:700}
+.hidecahier .cahier{display:none}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.b{border:1.5px solid var(--brand);background:#fff;color:var(--brand);border-radius:10px;padding:6px 14px;font-weight:600;font-size:.85em}
+.b.solid{background:var(--brand);color:#fff}
+.b:hover{filter:brightness(1.05)}
+/* reveal cards */
+.reveal{display:grid;grid-template-columns:repeat(var(--n,3),1fr);gap:12px}
+@media (max-width:900px){.reveal{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}}
+.rc{background:#fff;border:2px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left;display:flex;flex-direction:column;gap:6px;min-height:110px}
+.rc .ic{font-size:1.8em;line-height:1}
+.rc .ttl{font-weight:800;font-size:1.02em}
+.rc .hid{color:var(--muted);font-size:.86em;font-style:italic}
+.rc .txt{display:none;font-size:.9em}
+.rc.open{border-color:var(--brand2);background:#f7fbff}
+.rc.open .txt{display:block}
+.rc.open .hid{display:none}
+/* match */
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px 30px}
+.mcol{display:flex;flex-direction:column;gap:9px}
+.mi{border:2px solid var(--line);background:#fff;border-radius:12px;padding:9px 14px;text-align:left;font-weight:600;transition:all .15s}
+.mi.sel{border-color:var(--brand2);background:var(--soft);box-shadow:0 0 0 3px rgba(46,117,182,.2)}
+.mi.done{border-color:var(--ok);background:var(--okbg);color:var(--ok);cursor:default}
+.mi.bad{animation:shake .35s;border-color:var(--ko);background:var(--kobg)}
+.mi .pairno{display:inline-block;min-width:1.5em;height:1.5em;line-height:1.5em;text-align:center;border-radius:50%;background:var(--ok);color:#fff;font-size:.75em;margin-right:6px}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.status{margin-top:10px;font-weight:700}
+.status.win{color:var(--ok)}
+/* sort */
+.pool{display:flex;flex-wrap:wrap;gap:8px;min-height:50px;padding:10px;border:2px dashed var(--line);border-radius:14px;background:#fafcfe}
+.chipi{border:2px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;font-weight:600}
+.chipi.sel{border-color:var(--brand2);background:var(--soft);box-shadow:0 0 0 3px rgba(46,117,182,.2)}
+.chipi.ok{border-color:var(--ok);background:var(--okbg);color:var(--ok);cursor:default}
+.chipi.bad{animation:shake .35s;border-color:var(--ko);background:var(--kobg)}
+.bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:12px}
+.bin{border:2px solid var(--line);border-radius:14px;background:#fff;padding:10px;min-height:120px;text-align:left;display:flex;flex-direction:column;gap:6px}
+.bin .bh{font-weight:800;color:var(--brand)}
+.bin .bh small{display:block;font-weight:400;color:var(--muted);font-size:.75em}
+.bin.armed{border-color:var(--brand2);background:#f7fbff}
+.bin .in{display:flex;flex-wrap:wrap;gap:6px}
+/* verdict */
+.vcard{background:#fff;border:2px solid var(--line);border-radius:16px;padding:16px 20px;max-width:860px;margin:6px auto}
+.msg{background:#e9f7ef;border-radius:14px 14px 14px 4px;padding:12px 16px;font-size:1.05em;position:relative}
+.msg.sms{background:#eef1f5}
+.msg .from{display:block;font-size:.72em;color:var(--muted);font-weight:700;margin-bottom:4px}
+.vbtns{display:flex;gap:12px;justify-content:center;margin:14px 0 6px}
+.vb{border:none;border-radius:12px;padding:10px 26px;font-weight:800;color:#fff}
+.vb.a{background:var(--ko)} .vb.b{background:var(--ok)}
+.vb:disabled{opacity:.45;cursor:default}
+.vexp{display:none;border-radius:12px;padding:10px 14px;font-size:.92em}
+.vexp.show{display:block}
+.vexp.good{background:var(--okbg)} .vexp.wrong{background:var(--kobg)}
+.vnav{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:.8em;margin-top:8px}
+/* quiz */
+.qcard{background:#fff;border:2px solid var(--line);border-radius:16px;padding:16px 22px;max-width:980px;margin:6px auto}
+.qn{color:var(--muted);font-size:.78em;font-weight:700}
+.qq{font-size:1.15em;font-weight:700;margin:.3em 0 .6em}
+.qo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{border:2px solid var(--line);background:#fff;border-radius:12px;padding:10px 14px;text-align:left;font-weight:600}
+.opt .L{display:inline-block;width:1.6em;height:1.6em;line-height:1.6em;text-align:center;border-radius:50%;background:var(--soft);color:var(--brand);margin-right:8px;font-weight:800}
+.opt.right{border-color:var(--ok);background:var(--okbg)}
+.opt.wrong{border-color:var(--ko);background:var(--kobg)}
+.qexp{display:none;margin-top:10px;background:var(--soft);border-radius:12px;padding:10px 14px;font-size:.9em}
+.qexp.show{display:block}
+code,.mono{font-family:Consolas,"Courier New",monospace;background:#f1f4f8;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:.92em}
+/* tools */
+.meter{height:16px;border-radius:999px;background:#e6ebf1;overflow:hidden;margin:8px 0}
+.meter i{display:block;height:100%;width:0;transition:width .25s, background .25s}
+.bigin{font-size:1.15em;padding:10px 14px;border:2px solid var(--line);border-radius:12px;width:100%;font-family:Consolas,monospace}
+.checks{list-style:none;padding:0;margin:6px 0;display:grid;grid-template-columns:1fr 1fr;gap:4px 18px;font-size:.88em}
+.checks li.y{color:var(--ok)} .checks li.n{color:var(--muted)}
+.ladder{display:flex;align-items:stretch;gap:6px;margin:10px 0}
+.rung{flex:1 1 0;min-width:0;background:#fff;border:2px solid var(--line);border-radius:12px;padding:8px 8px;text-align:center}
+.rung b{display:block;font-size:1.25em;color:var(--brand)}
+.rung small{color:var(--muted);font-size:.72em}
+.arrow{color:var(--muted);font-weight:700;font-size:.8em;align-self:center}
+.convrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.convrow input,.convrow select{font-size:1.1em;padding:8px 10px;border:2px solid var(--line);border-radius:10px;font-family:inherit}
+.convout{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-top:10px}
+.convout div{background:#f7fafd;border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.convout b{color:var(--brand)}
+.tree{font-family:Consolas,monospace;background:#0f1d2b;color:#d7e6f5;border-radius:14px;padding:14px 18px;line-height:1.7;font-size:.95em}
+.tree .f{color:#ffd166} .tree .x{color:#8fd3ff}
+table.cmp{border-collapse:collapse;width:100%;background:#fff;border-radius:12px;overflow:hidden}
+table.cmp th,table.cmp td{border:1px solid var(--line);padding:8px 12px;text-align:left}
+table.cmp th{background:var(--soft);color:var(--brand)}
+/* scoreboard */
+#score{position:fixed;right:14px;bottom:70px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 30px rgba(20,40,70,.18);padding:10px 12px;display:none;z-index:20;min-width:230px}
+#score.show{display:block}
+#score h5{margin:0 0 6px;font-size:.75em;color:var(--muted);text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+.team{display:flex;align-items:center;gap:6px;margin:5px 0;font-weight:700}
+.team .sw{width:12px;height:12px;border-radius:50%}
+.team .nm{flex:1;font-size:.85em}
+.team .pts{min-width:1.8em;text-align:center;font-size:1.2em}
+.team button{border:1px solid var(--line);background:#fff;border-radius:8px;width:30px;height:30px;font-weight:800}
+.mini{border:1px solid var(--line);background:#fff;border-radius:6px;padding:2px 8px;font-size:.8em}
+.timer{font-variant-numeric:tabular-nums;font-weight:800}
+@media (max-width:800px){.match{grid-template-columns:1fr}.qo{grid-template-columns:1fr}.checks{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="home">
+  <div class="hero">
+    <small>OFPPT – El Aioun Sidi Mellouk · Filière RVA · Formateur : C. Amine</small>
+    <h1>Culture et techniques avancées du numérique</h1>
+    <div style="opacity:.9">Cours interactifs pour le vidéoprojecteur — choisis la séance.</div>
+  </div>
+  <div class="grid" id="sessions"></div>
+</div>
+
+<div id="course">
+  <div class="topbar">
+    <button class="tb" id="homeBtn">⌂ Séances</button>
+    <span class="t" id="ctitle"></span>
+    <span class="sp"></span>
+    <span class="timer" id="timer" title="Chronomètre de séance">00:00</span>
+    <button class="tb on" id="cahierBtn" title="Afficher / masquer les parties à copier">✎ Cahier</button>
+    <button class="tb" id="scoreBtn">🏆 Équipes</button>
+    <button class="tb" id="fsBtn">⛶ Plein écran</button>
+  </div>
+  <div class="stage" id="stage"></div>
+  <div class="bottombar">
+    <button class="nav prev" id="prev">◀ Précédent</button>
+    <div class="dots" id="dots"></div>
+    <button class="nav" id="next">Suivant ▶</button>
+  </div>
+</div>
+
+<div id="score">
+  <h5>Équipes <span><button class="mini" id="addT">+ équipe</button> <button class="mini" id="rstT">0</button></span></h5>
+  <div id="teams"></div>
+</div>
+
+<script>
+const SESSIONS = [
+/* =====================================================================
+   1re ANNÉE — Séance 3 (H5–H6) : Matériel + Sécurité de base
+   ===================================================================== */
+{
+ id:"a1-s3", groups:"RVA101 · RVA102", hours:"H5–H6 (2 h)", date:"Jeudi 19/11/2026",
+ title:"L'ordinateur, les fichiers et la sécurité de base",
+ desc:"Composants de l'unité centrale, périphériques, unités de mesure, fichiers et extensions, mots de passe et arnaques.",
+ steps:[
+  {kicker:"Accroche · 10 min", title:"Si l'ordinateur était une voiture…",
+   lead:"Vous connaissez les voitures. Un ordinateur fonctionne un peu de la même façon. Relie chaque pièce de l'ordinateur à son équivalent dans la voiture.",
+   blocks:[
+    {type:"match",pairs:[
+      ["🧠 Le processeur (CPU)","⚙️ Le moteur : il fait tout le travail"],
+      ["📋 La mémoire vive (RAM)","🧰 L'établi du mécanicien : on y pose ce qu'on utilise maintenant"],
+      ["💽 Le disque dur / SSD","🏬 Le magasin de pièces : on y range tout, même quand c'est fermé"],
+      ["🔌 La carte mère","🚙 Le châssis : toutes les pièces sont fixées et reliées dessus"],
+      ["⚡ L'alimentation","🔋 La batterie : elle donne l'énergie"],
+      ["🖥️ L'écran","📟 Le tableau de bord : il affiche les informations"],
+      ["⌨️ Le clavier et la souris","🕹️ Le volant et les pédales : on donne les ordres"]
+    ]}
+   ]},
+  {kicker:"Cours · 20 min", title:"Dans l'unité centrale",
+   lead:"Clique sur chaque composant pour découvrir son rôle.",
+   blocks:[
+    {type:"reveal",cards:[
+      {icon:"🧠",title:"Le processeur (CPU)",text:"C'est le « cerveau » : il <b>exécute les instructions</b> et fait les calculs. Sa vitesse se mesure en <b>GHz</b>. Exemples : Intel Core i5, AMD Ryzen 5."},
+      {icon:"📋",title:"La mémoire vive (RAM)",text:"Mémoire de travail <b>rapide</b> mais <b>temporaire</b> : elle s'efface quand on éteint. Plus il y a de RAM, plus on peut ouvrir de programmes. Exemple : 8 Go."},
+      {icon:"💽",title:"Le stockage (HDD / SSD)",text:"Il <b>garde les fichiers même éteint</b>. <b>HDD</b> : disque mécanique, moins cher, plus lent. <b>SSD</b> : électronique, beaucoup plus rapide. Exemple : 512 Go."},
+      {icon:"🔌",title:"La carte mère",text:"La grande carte où tous les composants sont <b>branchés et reliés</b> entre eux."},
+      {icon:"⚡",title:"L'alimentation",text:"Elle transforme le courant de la prise (220 V) en courant adapté aux composants."},
+      {icon:"🌀",title:"Le ventilateur",text:"Il <b>refroidit</b> le processeur — comme le radiateur et le ventilateur refroidissent le moteur !"}
+    ]},
+    {type:"html",html:`<div class="box"><b>❓ Question piège :</b> on coupe brusquement le courant pendant qu'on tape une fiche client non enregistrée. Qu'est-ce qu'on perd : ce qui est dans la <b>RAM</b> ou dans le <b>disque</b> ?
+      <details style="margin-top:6px"><summary style="cursor:pointer;color:var(--brand);font-weight:700">Réponse</summary>On perd ce qui est dans la <b>RAM</b> (le travail non enregistré). Ce qui est sur le disque reste. 👉 Il faut <b>enregistrer souvent</b> (Ctrl + S) !</details></div>`},
+    {type:"cahier",title:"L'unité centrale",html:`<ul>
+      <li><span class="k">Processeur (CPU)</span> : exécute les instructions et fait les calculs. Vitesse en GHz.</li>
+      <li><span class="k">Mémoire vive (RAM)</span> : mémoire de travail rapide et temporaire (s'efface à l'arrêt).</li>
+      <li><span class="k">Stockage (HDD / SSD)</span> : garde les données même éteint. Le SSD est plus rapide.</li>
+      <li><span class="k">Carte mère</span> : relie tous les composants.</li>
+      <li><span class="k">Alimentation</span> : fournit l'énergie aux composants.</li></ul>`}
+   ]},
+  {kicker:"Activité · 10 min", title:"Les périphériques",
+   lead:"Un périphérique est un appareil branché à l'ordinateur. Clique sur un élément, puis sur la bonne case.",
+   blocks:[
+    {type:"sort",bins:[["⬅️ Entrée","on donne une information à l'ordinateur"],["➡️ Sortie","l'ordinateur nous donne une information"],["↔️ Entrée et sortie","les deux à la fois"],["💾 Stockage","on garde des fichiers"]],
+     items:[["Clavier",0],["Souris",0],["Micro",0],["Scanner",0],["Webcam",0],["Écran",1],["Imprimante",1],["Haut-parleurs",1],["Écran tactile",2],["Casque avec micro",2],["Clé USB",3],["Disque dur externe",3],["Carte SD",3]]},
+    {type:"cahier",title:"Les périphériques",html:`<ul>
+      <li><span class="k">Entrée</span> : clavier, souris, micro, scanner, webcam.</li>
+      <li><span class="k">Sortie</span> : écran, imprimante, haut-parleurs.</li>
+      <li><span class="k">Entrée et sortie</span> : écran tactile, casque avec micro.</li>
+      <li><span class="k">Stockage</span> : clé USB, disque dur externe, carte SD.</li></ul>`}
+   ]},
+  {kicker:"Cours · 15 min", title:"Les unités de mesure",
+   lead:"Comme on mesure une distance en mètres, on mesure la taille d'un fichier en <b>octets</b>.",
+   blocks:[
+    {type:"html",html:`<p style="margin:.2em 0;color:var(--muted)">Chaque unité vaut <b>1 000 fois</b> la précédente :</p><div class="ladder">
+      <div class="rung"><b>1 octet</b><small>= 8 bits · une lettre</small></div><span class="arrow">→</span>
+      <div class="rung"><b>1 Ko</b><small>kilo-octet · un SMS</small></div><span class="arrow">→</span>
+      <div class="rung"><b>1 Mo</b><small>méga-octet · une photo ≈ 3 Mo</small></div><span class="arrow">→</span>
+      <div class="rung"><b>1 Go</b><small>giga-octet · un film ≈ 2 Go</small></div><span class="arrow">→</span>
+      <div class="rung"><b>1 To</b><small>téra-octet · un gros disque dur</small></div></div>`},
+    {type:"converter",value:16,unit:"Go"},
+    {type:"quiz",questions:[
+      {q:"Une clé USB de <b>16 Go</b>. Chaque photo de voiture fait <b>4 Mo</b>. Combien de photos peut-on mettre ?",o:["40","400","4 000","40 000"],a:2,e:"16 Go = 16 000 Mo. 16 000 ÷ 4 = <b>4 000 photos</b>."},
+      {q:"Le logiciel de diagnostic fait <b>3 Go</b>. Ta clé USB fait <b>2 Go</b>. Est-ce que ça passe ?",o:["Oui, sans problème","Non, la clé est trop petite","Oui, si on compresse","On ne peut pas savoir"],a:1,e:"3 Go est plus grand que 2 Go : il faut une clé plus grande (4 Go ou plus)."}
+    ]},
+    {type:"cahier",title:"Les unités",html:`<p style="margin:0">1 octet = 8 bits · <span class="k">1 Ko</span> = 1 000 octets · <span class="k">1 Mo</span> = 1 000 Ko · <span class="k">1 Go</span> = 1 000 Mo · <span class="k">1 To</span> = 1 000 Go</p>`}
+   ]},
+  {kicker:"Cours · 15 min", title:"Fichiers, dossiers et extensions",
+   lead:"Sur ton téléphone, les photos sont dans la Galerie, les PDF dans Téléchargements… Sur l'ordinateur, on range les <b>fichiers</b> dans des <b>dossiers</b>.",
+   blocks:[
+    {type:"html",html:`<div class="cols"><div class="tree">
+      📁 <span class="f">Garage_Atlas</span><br>&nbsp;&nbsp;└─ 📁 <span class="f">Clients</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ 📁 <span class="f">Youssef_Amrani</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 📄 fiche_client<span class="x">.docx</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 📊 devis<span class="x">.xlsx</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 🧾 facture<span class="x">.pdf</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ 📷 pare-choc<span class="x">.jpg</span></div>
+      <div class="box" style="margin:0"><b>Un fichier</b> = un document (texte, photo, vidéo…).<br><b>Un dossier</b> = une « boîte » pour ranger les fichiers.<br><b>L'extension</b> = les lettres après le point. Elle dit <b>quel type</b> de fichier c'est et <b>quel programme</b> l'ouvre.</div></div>`},
+    {type:"match",intro:"Relie chaque extension à son type de fichier.",pairs:[
+      [".docx","📝 Document Word"],[".xlsx","📊 Tableau Excel"],[".pptx","📽️ Présentation PowerPoint"],[".pdf","🧾 Document PDF (facture, manuel)"],
+      [".jpg","📷 Photo"],[".mp4","🎬 Vidéo"],[".mp3","🎵 Son / musique"],[".exe","⚠️ Programme à installer (attention !)"]
+    ]},
+    {type:"cahier",title:"Fichiers et dossiers",html:`<ul><li><span class="k">Fichier</span> : document enregistré (texte, image, son…). <span class="k">Dossier</span> : sert à ranger les fichiers.</li>
+      <li><span class="k">Extension</span> : indique le type du fichier. <span class="d">.docx</span> Word · <span class="d">.xlsx</span> Excel · <span class="d">.pdf</span> PDF · <span class="d">.jpg</span> image · <span class="d">.mp4</span> vidéo.</li></ul>`}
+   ]},
+  {kicker:"Sécurité · 15 min", title:"Un bon mot de passe",
+   lead:"Ton compte WhatsApp, Facebook ou Gmail, c'est comme la clé de ta voiture : il ne faut pas qu'on puisse la copier facilement.",
+   blocks:[
+    {type:"password",intro:"Essaie des mots de passe <b>inventés</b> au tableau : <code>garage</code>, <code>Garage2024</code>, <code>Mon-Garage!Taourirt26</code>…"},
+    {type:"cahier",title:"Le mot de passe",html:`<ul><li>Au moins <span class="k">12 caractères</span> : majuscules, minuscules, chiffres et symboles.</li>
+      <li>Jamais ton nom, ta date de naissance ou <i>123456</i>.</li><li>Un mot de passe <span class="k">différent</span> pour chaque compte. Ne le donne à personne.</li></ul>`}
+   ]},
+  {kicker:"Jeu · 15 min", title:"Arnaque ou fiable ?",
+   lead:"Ces messages arrivent sur ton téléphone. Vote avec ton équipe : arnaque ou message fiable ?",
+   blocks:[
+    {type:"verdict",items:[
+      {sms:true,from:"SMS · numéro inconnu",text:"Félicitations ! Vous avez gagné un iPhone 16 🎁. Récupérez-le ici : bit.ly/iphone-gratuit-16",ok:0,why:"Personne ne gagne un cadeau sans avoir joué. Le lien raccourci cache la vraie adresse : c'est un piège pour voler tes informations."},
+      {from:"WhatsApp · numéro inconnu",text:"Bonjour, c'est le service WhatsApp. Votre compte sera supprimé dans 24 h. Envoyez-nous le code à 6 chiffres que vous allez recevoir par SMS.",ok:0,why:"Le code reçu par SMS sert à ouvrir ton compte. Si tu le donnes, l'arnaqueur <b>vole ton WhatsApp</b>. WhatsApp ne demande jamais ce code."},
+      {sms:true,from:"SMS · « Livraison »",text:"Votre colis est bloqué au dépôt. Payez 12 DH de frais pour la livraison : livraison-colis-ma.info/payer",ok:0,why:"Arnaque très fréquente : le petit montant donne confiance, mais le site vole les informations de ta carte bancaire."},
+      {from:"Groupe WhatsApp « RVA101 – Informatique »",text:"Formateur : Bonjour à tous, pour la séance de jeudi apportez une clé USB si vous en avez une.",ok:1,why:"Message attendu, envoyé dans le groupe de la classe par une personne connue, sans lien ni demande d'argent ou de code."},
+      {sms:true,from:"SMS · « Votre banque »",text:"Votre carte est bloquée. Confirmez votre numéro de carte et votre code secret ici : banque-securite-verif.com",ok:0,why:"Une banque ne demande <b>jamais</b> ton code secret par SMS ou par e-mail. L'adresse du site est fausse."},
+      {from:"Notification de l'application Gmail",text:"Nouvelle connexion à votre compte Google sur un appareil Windows. Si c'était vous, aucune action n'est nécessaire.",ok:1,why:"C'est une alerte de sécurité normale, dans l'application officielle, sans demande de code. Si ce n'était pas toi : change ton mot de passe dans l'application."}
+    ]},
+    {type:"cahier",title:"Les arnaques",html:`<ul><li>Ne jamais donner un <span class="k">code reçu par SMS</span>, ni son code de carte bancaire.</li>
+      <li>Se méfier des messages qui <span class="k">pressent</span> (« dans 24 h ! ») ou promettent un cadeau.</li>
+      <li>Ne pas cliquer sur un lien inconnu : vérifier l'adresse du site.</li></ul>`}
+   ]},
+  {kicker:"Bilan · 10 min", title:"Quiz final par équipes",
+   lead:"Ouvre le tableau 🏆 Équipes. Chaque bonne réponse = 1 point.",
+   blocks:[
+    {type:"quiz",questions:[
+      {q:"Quel composant est le « moteur » de l'ordinateur ?",o:["La RAM","Le processeur","L'écran","La clé USB"],a:1,e:"Le processeur (CPU) exécute les instructions et fait les calculs."},
+      {q:"Que se passe-t-il pour la RAM quand on éteint l'ordinateur ?",o:["Elle se vide","Elle garde tout","Elle devient un disque","Rien"],a:0,e:"La RAM est temporaire : son contenu s'efface à l'arrêt."},
+      {q:"L'imprimante est un périphérique…",o:["d'entrée","de sortie","de stockage","de calcul"],a:1,e:"Elle fait sortir une information de l'ordinateur sur papier."},
+      {q:"Combien de Mo dans 2 Go ?",o:["20","200","2 000","20 000"],a:2,e:"1 Go = 1 000 Mo, donc 2 Go = 2 000 Mo."},
+      {q:"Le fichier <code>facture.pdf</code> est…",o:["une vidéo","un document PDF","un tableau Excel","un programme"],a:1,e:"L'extension .pdf indique un document PDF."},
+      {q:"Quel mot de passe est le plus solide ?",o:["123456","youssef2005","Garage","R@pide-Logan!48km"],a:3,e:"Long, avec majuscules, minuscules, chiffres et symboles."}
+    ]}
+   ]}
+ ]
+},
+
+/* =====================================================================
+   2e ANNÉE — Séance 3 (H9–H12) : Matériel avancé, sécurité, recherche, collaboration
+   ===================================================================== */
+{
+ id:"a2-s3", groups:"RVA201 · RVA202", hours:"H9–H12 (4 h)", date:"Mercredi 25/11/2026",
+ title:"Matériel avancé, sécurité, recherche et collaboration",
+ desc:"Ordinateurs embarqués (ECU, OBD), choisir un PC, navigateur, sécurité des comptes, recherche avancée, Google Drive et e-réputation.",
+ steps:[
+  {kicker:"Accroche · 15 min", title:"Votre voiture contient des dizaines d'ordinateurs",
+   lead:"Une voiture moderne contient souvent plus de 30 calculateurs (ECU). Clique pour découvrir les principaux.",
+   blocks:[
+    {type:"reveal",cards:[
+      {icon:"⚙️",title:"Calculateur moteur (ECU)",text:"Il lit les capteurs (température, oxygène, régime…) et commande l'<b>injection</b> et l'allumage. C'est un vrai ordinateur : processeur, mémoire, programme."},
+      {icon:"🛑",title:"Calculateur ABS / ESP",text:"Il surveille la vitesse de chaque roue et évite le blocage des roues au freinage."},
+      {icon:"🎈",title:"Calculateur airbag",text:"Il détecte le choc grâce à des capteurs et déclenche les airbags en quelques millisecondes."},
+      {icon:"💡",title:"Boîtier de servitude (BSI)",text:"Il gère l'éclairage, les vitres, la fermeture centralisée, les essuie-glaces…"},
+      {icon:"🔗",title:"Le réseau CAN",text:"Les calculateurs <b>communiquent entre eux</b> par un réseau (le bus CAN), comme des ordinateurs reliés en réseau."},
+      {icon:"🔌",title:"La prise OBD",text:"Prise normalisée sous le volant. La <b>valise de diagnostic</b> s'y branche pour lire les <b>codes défaut</b> (ex : P0300 = ratés d'allumage)."}
+    ]},
+    {type:"html",html:`<div class="box">💬 <b>Discussion :</b> la valise de diagnostic, c'est un outil mécanique ou informatique ? Qui a déjà vu un mécanicien « reprogrammer » un calculateur ou lire un code défaut ?</div>`},
+    {type:"cahier",title:"L'informatique embarquée",html:`<ul><li><span class="k">ECU</span> (calculateur) : ordinateur embarqué qui lit des capteurs et commande des actionneurs.</li>
+      <li>Les calculateurs communiquent par le <span class="k">bus CAN</span>.</li><li>La <span class="k">prise OBD</span> permet de lire les codes défaut avec une valise de diagnostic.</li></ul>`}
+   ]},
+  {kicker:"Cours · 25 min", title:"Les composants : ce qu'il faut savoir lire",
+   lead:"Quand on achète un PC (pour le garage, pour la valise de diagnostic…), il faut savoir lire la fiche technique.",
+   blocks:[
+    {type:"html",html:`<table class="cmp"><tr><th>Composant</th><th>Ce qu'on regarde</th><th>Exemple</th></tr>
+      <tr><td><b>Processeur (CPU)</b></td><td>Nombre de <b>cœurs</b> et vitesse en <b>GHz</b></td><td>Intel Core i5, 4 cœurs, 3,2 GHz</td></tr>
+      <tr><td><b>RAM</b></td><td>Quantité en <b>Go</b> (8 Go minimum aujourd'hui)</td><td>8 Go DDR4</td></tr>
+      <tr><td><b>Stockage</b></td><td><b>SSD</b> (rapide) ou <b>HDD</b> (lent, moins cher) + capacité</td><td>SSD 512 Go</td></tr>
+      <tr><td><b>Système</b></td><td>Windows / Linux, version 64 bits</td><td>Windows 11, 64 bits</td></tr>
+      <tr><td><b>Ports</b></td><td>USB, HDMI, Ethernet, Wi-Fi, Bluetooth</td><td>3 × USB, 1 × HDMI</td></tr></table>`},
+    {type:"match",intro:"Relie chaque port à son usage.",pairs:[
+      ["USB-A","🔌 Clé USB, souris, câble de la valise de diagnostic"],["USB-C","📱 Charger et relier les appareils récents"],["HDMI","🖥️ Brancher un écran ou un vidéoprojecteur"],
+      ["RJ45 (Ethernet)","🌐 Câble réseau / Internet"],["Jack 3,5 mm","🎧 Casque ou haut-parleurs"],["OBD-II","🚗 Relier la valise de diagnostic à la voiture"]
+    ]},
+    {type:"quiz",questions:[
+      {q:"Le logiciel de diagnostic demande : <b>Windows 10 64 bits, 8 Go de RAM, 50 Go libres, USB</b>. Quel PC choisir ?",
+       o:["PC A : 4 Go RAM, HDD 500 Go, Windows 10","PC B : 8 Go RAM, SSD 256 Go, Windows 11 64 bits, 3 USB","PC C : 16 Go RAM, SSD 1 To, aucun port USB","PC D : tablette Android 8 Go"],a:1,e:"Le PC B respecte tout : 8 Go de RAM, assez de place, Windows 64 bits et des ports USB. Le C n'a pas d'USB (pas de valise !), le A n'a pas assez de RAM."},
+      {q:"Pourquoi un SSD rend-il l'ordinateur plus rapide au démarrage ?",o:["Il a plus de place","Il lit les données électroniquement, sans pièce qui tourne","Il refroidit le processeur","Il augmente la RAM"],a:1,e:"Le HDD a un plateau qui tourne et une tête qui bouge ; le SSD est électronique, donc beaucoup plus rapide."}
+    ]},
+    {type:"cahier",title:"Lire une fiche technique",html:`<ul><li><span class="k">CPU</span> : cœurs + GHz · <span class="k">RAM</span> : en Go (≥ 8 Go) · <span class="k">SSD</span> plus rapide que <span class="k">HDD</span>.</li>
+      <li>Vérifier les <span class="k">exigences du logiciel</span> (système, RAM, espace, ports) avant d'acheter.</li></ul>`}
+   ]},
+  {kicker:"Cours · 15 min", title:"Bien utiliser le navigateur",
+   lead:"Chrome, Edge, Firefox… Le navigateur est l'outil qu'on utilise le plus. Clique pour découvrir ses fonctions.",
+   blocks:[
+    {type:"reveal",cards:[
+      {icon:"🗂️",title:"Les onglets",text:"Ouvrir plusieurs pages dans la même fenêtre. <code>Ctrl + T</code> nouvel onglet, <code>Ctrl + W</code> fermer, <code>Ctrl + Maj + T</code> rouvrir l'onglet fermé."},
+      {icon:"⭐",title:"Les favoris",text:"Garder l'adresse d'un site utile (catalogue de pièces, fournisseur…). <code>Ctrl + D</code>."},
+      {icon:"🕘",title:"L'historique",text:"Retrouver une page visitée. <code>Ctrl + H</code>. On peut l'effacer."},
+      {icon:"🕶️",title:"La navigation privée",text:"Ne garde pas l'historique sur cet ordinateur. Utile sur un PC partagé (cybercafé, garage). <code>Ctrl + Maj + N</code>."},
+      {icon:"⬇️",title:"Les téléchargements",text:"Voir et ouvrir les fichiers téléchargés. <code>Ctrl + J</code>. Ils vont dans le dossier « Téléchargements »."},
+      {icon:"🧩",title:"Les extensions",text:"Petits programmes ajoutés au navigateur (traduction, bloqueur de pub…). À installer <b>seulement</b> depuis la boutique officielle."},
+      {icon:"🔄",title:"La synchronisation",text:"Connecté à son compte Google, on retrouve ses favoris et mots de passe sur le PC et le téléphone."},
+      {icon:"🔒",title:"Le cadenas https",text:"Indique une connexion chiffrée. Attention : il ne prouve pas que le site est honnête, il faut aussi vérifier l'adresse."}
+    ]}
+   ]},
+  {kicker:"Sécurité · 30 min", title:"Protéger ses comptes et les données des clients",
+   lead:"Un garage garde des données personnelles : noms, téléphones, plaques, factures. Les protéger, c'est un devoir.",
+   blocks:[
+    {type:"password",intro:"Teste des mots de passe <b>inventés</b> : <code>logan2018</code>, <code>Logan2018!</code>, <code>Atelier-Frein#Taourirt-48</code>…"},
+    {type:"reveal",cards:[
+      {icon:"🔐",title:"La double authentification (2FA)",text:"En plus du mot de passe, on demande un <b>code envoyé sur le téléphone</b>. Même si le mot de passe est volé, le compte reste protégé. À activer sur WhatsApp, Gmail, Facebook."},
+      {icon:"🗝️",title:"Le gestionnaire de mots de passe",text:"Il retient tous les mots de passe à ta place (ex : celui de Google/Chrome). Tu n'as qu'un seul mot de passe principal à retenir."},
+      {icon:"💾",title:"La sauvegarde 3-2-1",text:"<b>3</b> copies des données, sur <b>2</b> supports différents, dont <b>1</b> hors du garage (cloud : Google Drive). Si le PC tombe en panne, on ne perd rien."},
+      {icon:"📇",title:"Les données des clients",text:"Au Maroc, la <b>loi 09-08</b> protège les données personnelles (contrôle : la <b>CNDP</b>). On ne partage pas le numéro ou la plaque d'un client sans raison."}
+    ]},
+    {type:"verdict",intro:"Arnaque ou fiable ? Messages reçus par le garage.",items:[
+      {from:"E-mail · « Fournisseur Pièces Auto »  &lt;compta@pieces-auto-paiement.net&gt;",text:"Bonjour, nos coordonnées bancaires ont changé. Merci de payer la facture n° 4587 sur ce nouveau RIB avant ce soir.",ok:0,why:"Classique « arnaque au faux fournisseur » : changement de RIB + urgence + adresse e-mail inconnue. On appelle le fournisseur sur son <b>numéro habituel</b> pour vérifier."},
+      {from:"WhatsApp · Client connu (Youssef Amrani)",text:"Bonjour, ma Logan fait encore le bruit au freinage. Je peux passer demain à 10 h ?",ok:1,why:"Un client connu, une demande normale, pas de lien ni d'argent demandé."},
+      {from:"E-mail · « Microsoft Support »",text:"Votre ordinateur est infecté ! Appelez immédiatement le 08 xx xx xx xx ou téléchargez cet outil de réparation : outil-fix.exe",ok:0,why:"Faux support technique : Microsoft ne contacte pas les gens comme ça. Le fichier .exe peut être un virus."},
+      {from:"Notification Google",text:"Validation en deux étapes activée sur votre compte. Si ce n'était pas vous, sécurisez votre compte depuis les paramètres.",ok:1,why:"Notification officielle de sécurité, sans lien suspect ni demande de code."}
+    ]},
+    {type:"cahier",title:"Sécurité des données",html:`<ul><li>Activer la <span class="k">double authentification</span> sur ses comptes importants.</li>
+      <li>Sauvegarde <span class="k">3-2-1</span> : 3 copies, 2 supports, 1 hors du lieu de travail.</li>
+      <li>Les données des clients sont protégées par la <span class="k">loi 09-08</span> (CNDP).</li>
+      <li>Changement de RIB, urgence, fichier <span class="d">.exe</span> : <span class="k">toujours vérifier</span> avant d'agir.</li></ul>`}
+   ]},
+  {kicker:"Recherche · 35 min", title:"Chercher comme un pro",
+   lead:"Google donne des millions de résultats. Les opérateurs permettent de trouver <b>exactement</b> ce qu'on cherche.",
+   blocks:[
+    {type:"reveal",cards:[
+      {icon:"❝ ❞",title:"Les guillemets \" \"",text:"Cherche l'expression <b>exacte</b>.<br><code>\"Dacia Logan\" courroie distribution</code>"},
+      {icon:"➖",title:"Le signe moins -",text:"<b>Exclut</b> un mot.<br><code>plaquettes frein Logan -occasion</code>"},
+      {icon:"📄",title:"filetype:",text:"Cherche un <b>type de fichier</b>.<br><code>manuel atelier Logan filetype:pdf</code>"},
+      {icon:"🌐",title:"site:",text:"Cherche <b>dans un seul site</b>.<br><code>codes défaut site:youtube.com</code>"},
+      {icon:"🔀",title:"OR",text:"L'un <b>ou</b> l'autre.<br><code>Logan OR Sandero vidange</code>"},
+      {icon:"🖼️",title:"Google Images / Lens",text:"Prendre une <b>photo d'une pièce</b> pour trouver sa référence ou son nom."}
+    ]},
+    {type:"quiz",intro:"Quelle requête choisir ?",questions:[
+      {q:"Tu veux le <b>manuel d'atelier en PDF</b> de la Dacia Logan.",o:["<code>logan</code>","<code>manuel atelier \"Dacia Logan\" filetype:pdf</code>","<code>dacia voiture manuel</code>","<code>logan pdf -manuel</code>"],a:1,e:"Les guillemets gardent « Dacia Logan » ensemble et filetype:pdf ne donne que des PDF."},
+      {q:"La valise affiche le code <b>P0420</b>. Tu veux sa signification.",o:["<code>P0420</code>","<code>\"P0420\" signification catalyseur</code>","<code>code voiture problème</code>","<code>P0420 -signification</code>"],a:1,e:"Le code entre guillemets + des mots-clés précis. (P0420 = efficacité du catalyseur trop faible.)"},
+      {q:"Tu cherches des prix de <b>plaquettes de frein neuves</b>, pas d'occasion.",o:["<code>plaquettes frein Logan prix -occasion</code>","<code>plaquettes occasion</code>","<code>frein</code>","<code>\"occasion\" plaquettes</code>"],a:0,e:"Le signe moins retire les résultats qui contiennent « occasion »."},
+      {q:"Tu veux seulement des <b>vidéos YouTube</b> sur le remplacement d'un alternateur.",o:["<code>alternateur youtube.com</code>","<code>remplacement alternateur site:youtube.com</code>","<code>\"youtube\" -alternateur</code>","<code>alternateur filetype:youtube</code>"],a:1,e:"site:youtube.com limite la recherche au site YouTube."}
+    ]},
+    {type:"reveal",intro:"<b>Un site est-il fiable ?</b> Les 4 questions à se poser :",cards:[
+      {icon:"👤",title:"Qui l'a écrit ?",text:"Un constructeur, un fournisseur connu, un professionnel ? Ou un inconnu ?"},
+      {icon:"📅",title:"C'est récent ?",text:"Une information de 2010 peut être dépassée (nouveaux moteurs, nouvelles normes)."},
+      {icon:"🔁",title:"D'autres sites disent pareil ?",text:"Vérifier sur <b>2 ou 3 sources</b> avant de faire une réparation."},
+      {icon:"💰",title:"Il veut me vendre quelque chose ?",text:"Une page publicitaire n'est pas neutre."}
+    ]},
+    {type:"cahier",title:"Recherche avancée",html:`<ul><li><span class="d">" "</span> expression exacte · <span class="d">-mot</span> exclure · <span class="d">filetype:pdf</span> type de fichier · <span class="d">site:</span> un seul site · <span class="d">OR</span> l'un ou l'autre.</li>
+      <li>Vérifier une source : <span class="k">auteur, date, autres sources, intérêt commercial</span>.</li></ul>`}
+   ]},
+  {kicker:"Collaboration · 30 min", title:"Travailler à plusieurs et partager en ligne",
+   lead:"Au garage, le chef d'atelier, le magasinier et le comptable travaillent souvent sur les mêmes documents.",
+   blocks:[
+    {type:"reveal",cards:[
+      {icon:"☁️",title:"Google Drive",text:"Stocker ses fichiers <b>en ligne</b> (15 Go gratuits) et les retrouver sur n'importe quel appareil."},
+      {icon:"👥",title:"Google Docs / Sheets partagés",text:"Plusieurs personnes modifient <b>le même fichier en même temps</b>. Plus besoin d'envoyer 10 versions sur WhatsApp."},
+      {icon:"💬",title:"Les commentaires",text:"Ajouter une remarque sur une ligne (« pièce commandée ? ») sans modifier le contenu."},
+      {icon:"🕘",title:"L'historique des versions",text:"Voir qui a modifié quoi, et revenir à une ancienne version en cas d'erreur."}
+    ]},
+    {type:"sort",intro:"Quel <b>droit d'accès</b> donner au moment de partager le fichier « Stock pièces » ?",
+     bins:[["👁️ Lecteur","peut seulement voir"],["💬 Commentateur","peut voir et commenter"],["✏️ Éditeur","peut tout modifier"]],
+     items:[["Le client qui veut voir son devis",0],["Le comptable qui vérifie sans rien changer",1],["Le magasinier qui met à jour le stock",2],["Le patron qui relit et donne son avis",1],["Le collègue qui ajoute les pièces commandées",2],["Un fournisseur qui consulte la liste",0]]},
+    {type:"verdict",labels:["👎 À éviter","👍 Bonne pratique"],intro:"La page Facebook / WhatsApp Business du garage : bonne pratique ou à éviter ?",items:[
+      {from:"Publication Facebook du garage",text:"Photo avant/après d'une carrosserie réparée, avec l'accord du client et la plaque d'immatriculation floutée.",ok:1,why:"Montre le savoir-faire tout en respectant la vie privée du client."},
+      {from:"Statut WhatsApp du garage",text:"Photo de la carte grise d'un client « pour montrer qu'on travaille sur des voitures récentes ».",ok:0,why:"Données personnelles du client publiées sans accord : interdit (loi 09-08) et mauvais pour la confiance."},
+      {from:"Réponse à un avis négatif",text:"« Bonjour, merci pour votre retour. Nous sommes désolés pour le retard. Appelez-nous, nous allons trouver une solution. »",ok:1,why:"Réponse calme et professionnelle : elle protège l'<b>e-réputation</b> du garage."},
+      {from:"WhatsApp Business",text:"Catalogue des services avec prix (vidange, plaquettes, diagnostic), horaires et localisation.",ok:1,why:"WhatsApp Business permet un catalogue, des horaires et des réponses automatiques : très utile pour un petit garage."}
+    ]},
+    {type:"cahier",title:"Collaborer et partager",html:`<ul><li><span class="k">Google Drive</span> : stockage en ligne · <span class="k">Docs / Sheets</span> partagés : travail à plusieurs en même temps.</li>
+      <li>Droits de partage : <span class="d">Lecteur</span>, <span class="d">Commentateur</span>, <span class="d">Éditeur</span>.</li>
+      <li><span class="k">E-réputation</span> : l'image du garage sur Internet. Publier avec l'accord des clients, répondre poliment aux avis.</li></ul>`}
+   ]},
+  {kicker:"Bilan · 20 min", title:"Quiz final par équipes",
+   lead:"Ouvre le tableau 🏆 Équipes. Chaque bonne réponse = 1 point.",
+   blocks:[
+    {type:"quiz",questions:[
+      {q:"Que lit-on avec une valise branchée sur la prise OBD ?",o:["La pression des pneus uniquement","Les codes défaut des calculateurs","Le niveau d'huile","La carte grise"],a:1,e:"La prise OBD donne accès aux calculateurs et à leurs codes défaut."},
+      {q:"Pour un PC rapide, quel stockage choisir ?",o:["HDD","SSD","Clé USB","DVD"],a:1,e:"Le SSD est électronique et beaucoup plus rapide que le HDD."},
+      {q:"Quelle requête trouve uniquement des fichiers PDF ?",o:["<code>manuel pdf</code>","<code>manuel -pdf</code>","<code>manuel filetype:pdf</code>","<code>\"pdf\"</code>"],a:2,e:"filetype:pdf limite les résultats aux documents PDF."},
+      {q:"La double authentification, c'est…",o:["deux mots de passe identiques","un code en plus du mot de passe","deux comptes Google","un antivirus"],a:1,e:"Un code (souvent par SMS ou application) est demandé en plus du mot de passe."},
+      {q:"Le comptable doit vérifier le fichier sans rien modifier. Quel droit ?",o:["Éditeur","Propriétaire","Commentateur","Aucun"],a:2,e:"Commentateur : il voit et peut laisser des remarques sans modifier."},
+      {q:"Un « fournisseur » demande de payer sur un nouveau RIB avant ce soir. Que faire ?",o:["Payer vite","Appeler le fournisseur sur son numéro habituel","Répondre à l'e-mail","Transférer au client"],a:1,e:"On vérifie toujours par un autre moyen de contact connu."}
+    ]}
+   ]}
+ ]
+}
+];
+
+</script>
+<script>
+/* ===================== ENGINE ===================== */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+let S=null, idx=0, seen=new Set(), t0=null, timerH=null;
+
+/* ---------- home ---------- */
+function home(){
+  $("#course").style.display="none";$("#home").style.display="block";$("#score").classList.remove("show");
+  $("#sessions").innerHTML=SESSIONS.map((s,i)=>`<button class="scard ${s.steps?"":"soon"}" data-i="${i}">
+      <span class="tag">${esc(s.groups)} · ${esc(s.hours)}</span><h2>${esc(s.title)}</h2><p>${esc(s.desc)}</p>
+      <p><b>${s.steps?s.steps.length+" étapes":"Bientôt"}</b>${s.date?" · "+esc(s.date):""}</p></button>`).join("");
+  document.querySelectorAll(".scard").forEach(b=>b.onclick=()=>{const s=SESSIONS[+b.dataset.i];if(s.steps)location.hash=s.id});
+}
+function open(id){
+  const s=SESSIONS.find(x=>x.id===id);if(!s||!s.steps){home();return}
+  S=s;idx=0;seen=new Set();
+  $("#home").style.display="none";$("#course").style.display="flex";
+  $("#ctitle").textContent=`${s.groups} · ${s.hours} — ${s.title}`;
+  t0=Date.now();clearInterval(timerH);timerH=setInterval(tick,1000);tick();
+  show();
+}
+function tick(){const s=Math.floor((Date.now()-t0)/1000);$("#timer").textContent=String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+
+function show(){
+  seen.add(idx);
+  const st=S.steps[idx];
+  const stage=$("#stage");
+  stage.innerHTML=`<div class="step">${st.kicker?`<span class="kicker">${esc(st.kicker)}</span>`:""}<h2>${st.title}</h2>${st.lead?`<p class="lead">${st.lead}</p>`:""}<div id="blocks"></div></div>`;
+  const host=$("#blocks");
+  (st.blocks||[]).forEach(bl=>{const el=document.createElement("div");host.appendChild(el);WIDGETS[bl.type](el,bl)});
+  stage.scrollTop=0;
+  $("#prev").disabled=idx===0;
+  $("#next").textContent=idx===S.steps.length-1?"Fin ✓":"Suivant ▶";
+  $("#dots").innerHTML=S.steps.map((x,i)=>`<button class="dot ${i===idx?"on":seen.has(i)?"seen":""}" title="${esc(x.title.replace(/<[^>]+>/g,""))}" data-i="${i}"></button>`).join("");
+  document.querySelectorAll(".dot").forEach(d=>d.onclick=()=>{idx=+d.dataset.i;show()});
+}
+$("#prev").onclick=()=>{if(idx>0){idx--;show()}};
+$("#next").onclick=()=>{if(idx<S.steps.length-1){idx++;show()}else{location.hash="";}};
+$("#homeBtn").onclick=()=>{location.hash=""};
+document.addEventListener("keydown",e=>{
+  if($("#course").style.display!=="flex")return;
+  if(["INPUT","SELECT","TEXTAREA"].includes(document.activeElement.tagName))return;
+  if(e.key==="ArrowRight"||e.key==="PageDown"){$("#next").click()}
+  if(e.key==="ArrowLeft"||e.key==="PageUp"){$("#prev").click()}
+});
+$("#cahierBtn").onclick=e=>{document.body.classList.toggle("hidecahier");e.currentTarget.classList.toggle("on")};
+$("#fsBtn").onclick=()=>{try{if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});else document.exitFullscreen()}catch(e){}};
+window.addEventListener("hashchange",route);
+function route(){const h=location.hash.replace("#","");if(h)open(h);else{clearInterval(timerH);home()}}
+
+/* ---------- scoreboard ---------- */
+const TCOL=["var(--c1)","var(--c2)","var(--c3)","var(--c4)"];
+let teams=[{n:"Équipe 1",p:0},{n:"Équipe 2",p:0}];
+function drawTeams(){
+  $("#teams").innerHTML=teams.map((t,i)=>`<div class="team"><span class="sw" style="background:${TCOL[i]}"></span><span class="nm" contenteditable="true" data-i="${i}">${esc(t.n)}</span>
+    <button data-i="${i}" data-d="-1">−</button><span class="pts">${t.p}</span><button data-i="${i}" data-d="1">+</button></div>`).join("");
+  document.querySelectorAll(".team button").forEach(b=>b.onclick=()=>{teams[+b.dataset.i].p+=+b.dataset.d;drawTeams()});
+  document.querySelectorAll(".team .nm").forEach(n=>n.onblur=()=>{teams[+n.dataset.i].n=n.innerText.trim()||teams[+n.dataset.i].n});
+}
+$("#scoreBtn").onclick=e=>{$("#score").classList.toggle("show");e.currentTarget.classList.toggle("on")};
+$("#addT").onclick=()=>{if(teams.length<4){teams.push({n:"Équipe "+(teams.length+1),p:0});drawTeams()}};
+$("#rstT").onclick=()=>{teams.forEach(t=>t.p=0);drawTeams()};
+drawTeams();
+
+/* ---------- widgets ---------- */
+const WIDGETS={
+  html(el,b){el.innerHTML=b.html},
+  cahier(el,b){el.innerHTML=`<div class="cahier"><h4>✎ À copier dans le cahier${b.title?" — "+b.title:""}</h4>${b.html}</div>`},
+
+  reveal(el,b){
+    el.innerHTML=`${b.intro?`<p>${b.intro}</p>`:""}<div class="reveal" style="--n:${(n=>n<=4?n:(n%3===0?3:4))(b.cards.length)}">${b.cards.map(c=>`<button class="rc"><span class="ic">${c.icon||"❓"}</span><span class="ttl">${c.title}</span><span class="hid">Clique pour découvrir</span><span class="txt">${c.text}</span></button>`).join("")}</div>
+      <div class="btnrow"><button class="b ra">Tout afficher</button></div>`;
+    el.querySelectorAll(".rc").forEach(c=>c.onclick=()=>c.classList.toggle("open"));
+    el.querySelector(".ra").onclick=()=>el.querySelectorAll(".rc").forEach(c=>c.classList.add("open"));
+  },
+
+  match(el,b){
+    const L=b.pairs.map((p,i)=>({t:p[0],i})), R=shuffle(b.pairs.map((p,i)=>({t:p[1],i})));
+    el.innerHTML=`${b.intro?`<p>${b.intro}</p>`:""}<div class="box"><div class="match"><div class="mcol" data-s="L">${L.map(x=>`<button class="mi" data-i="${x.i}">${x.t}</button>`).join("")}</div>
+      <div class="mcol" data-s="R">${R.map(x=>`<button class="mi" data-i="${x.i}">${x.t}</button>`).join("")}</div></div>
+      <div class="status"></div><div class="btnrow"><button class="b sol">Voir la solution</button><button class="b rst">Recommencer</button></div></div>`;
+    let selL=null,selR=null,n=0,found=0;
+    const stat=el.querySelector(".status");
+    const tryPair=()=>{
+      if(!selL||!selR)return;
+      if(selL.dataset.i===selR.dataset.i){n++;found++;[selL,selR].forEach(x=>{x.classList.remove("sel");x.classList.add("done");x.innerHTML=`<span class="pairno">${n}</span>`+x.innerHTML});
+        if(found===b.pairs.length){stat.textContent="🎉 Bravo ! Toutes les paires sont trouvées.";stat.className="status win"}}
+      else{[selL,selR].forEach(x=>{x.classList.remove("sel");x.classList.add("bad");setTimeout(()=>x.classList.remove("bad"),400)})}
+      selL=selR=null};
+    el.querySelectorAll(".mi").forEach(m=>m.onclick=()=>{
+      if(m.classList.contains("done"))return;
+      const side=m.parentElement.dataset.s;
+      m.parentElement.querySelectorAll(".mi.sel").forEach(x=>x.classList.remove("sel"));
+      m.classList.add("sel");if(side==="L")selL=m;else selR=m;tryPair()});
+    el.querySelector(".rst").onclick=()=>WIDGETS.match(el,b);
+    el.querySelector(".sol").onclick=()=>{
+      const m=el.querySelector(".match");m.style.display="grid";m.style.gridTemplateColumns="1fr 1fr";m.style.gap="9px 30px";
+      m.innerHTML=b.pairs.map((p,i)=>`<div class="mi done"><span class="pairno">${i+1}</span>${p[0]}</div><div class="mi done"><span class="pairno">${i+1}</span>${p[1]}</div>`).join("");
+      stat.textContent="Solution affichée.";stat.className="status"};
+  },
+
+  sort(el,b){
+    el.innerHTML=`${b.intro?`<p>${b.intro}</p>`:""}<div class="pool">${shuffle(b.items).map(it=>`<button class="chipi" data-c="${it[1]}">${it[0]}</button>`).join("")}</div>
+      <div class="bins">${b.bins.map((bn,i)=>`<div class="bin" data-c="${i}"><div class="bh">${bn[0]}${bn[1]?`<small>${bn[1]}</small>`:""}</div><div class="in"></div></div>`).join("")}</div>
+      <div class="status"></div><div class="btnrow"><button class="b sol">Voir la solution</button><button class="b rst">Recommencer</button></div>`;
+    let sel=null;const stat=el.querySelector(".status");
+    const check=()=>{if(!el.querySelector(".pool .chipi")){stat.textContent="🎉 Bravo ! Tout est bien classé.";stat.className="status win"}};
+    el.querySelectorAll(".pool .chipi").forEach(c=>c.onclick=()=>{
+      if(c.classList.contains("ok"))return;
+      el.querySelectorAll(".chipi.sel").forEach(x=>x.classList.remove("sel"));
+      sel=c;c.classList.add("sel");el.querySelectorAll(".bin").forEach(x=>x.classList.add("armed"))});
+    el.querySelectorAll(".bin").forEach(bn=>bn.onclick=()=>{
+      if(!sel)return;
+      el.querySelectorAll(".bin").forEach(x=>x.classList.remove("armed"));
+      if(sel.dataset.c===bn.dataset.c){sel.classList.remove("sel");sel.classList.add("ok");bn.querySelector(".in").appendChild(sel);check()}
+      else{const s=sel;s.classList.add("bad");setTimeout(()=>s.classList.remove("bad","sel"),400)}
+      sel=null});
+    el.querySelector(".rst").onclick=()=>WIDGETS.sort(el,b);
+    el.querySelector(".sol").onclick=()=>{el.querySelectorAll(".pool .chipi").forEach(c=>{c.classList.remove("sel");c.classList.add("ok");el.querySelector(`.bin[data-c="${c.dataset.c}"] .in`).appendChild(c)});check()};
+  },
+
+  verdict(el,b){
+    let i=0,score=0;const items=b.items,la=b.labels||["🚨 Arnaque","✅ Fiable"];
+    const draw=()=>{const it=items[i];
+      el.innerHTML=`${b.intro?`<p>${b.intro}</p>`:""}<div class="vcard"><div class="msg ${it.sms?"sms":""}"><span class="from">${it.from||""}</span>${it.text}</div>
+        <div class="vbtns"><button class="vb a" data-v="0">${la[0]}</button><button class="vb b" data-v="1">${la[1]}</button></div>
+        <div class="vexp"></div>
+        <div class="vnav"><span>Message ${i+1} / ${items.length} · bonnes réponses : ${score}</span><span><button class="b vp">◀</button> <button class="b vn">▶</button></span></div></div>`;
+      el.querySelectorAll(".vb").forEach(v=>v.onclick=()=>{
+        const good=(+v.dataset.v)===it.ok;if(good)score++;
+        el.querySelectorAll(".vb").forEach(x=>x.disabled=true);
+        const ex=el.querySelector(".vexp");ex.className="vexp show "+(good?"good":"wrong");
+        ex.innerHTML=`<b>${good?"Bonne réponse !":"Non !"}</b> C'est : <b>${la[it.ok]}</b>. ${it.why}`;
+        el.querySelector(".vnav span").textContent=`Message ${i+1} / ${items.length} · bonnes réponses : ${score}`});
+      el.querySelector(".vp").onclick=()=>{if(i>0){i--;draw()}};
+      el.querySelector(".vn").onclick=()=>{if(i<items.length-1){i++;draw()}};
+    };draw();
+  },
+
+  quiz(el,b){
+    let i=0;
+    const draw=()=>{const q=b.questions[i];
+      el.innerHTML=`${b.intro&&i===0?`<p>${b.intro}</p>`:""}<div class="qcard"><div class="qn">Question ${i+1} / ${b.questions.length} — ouvre le tableau 🏆 Équipes pour compter les points</div>
+        <div class="qq">${q.q}</div><div class="qo">${q.o.map((o,k)=>`<button class="opt" data-k="${k}"><span class="L">${"ABCD"[k]}</span>${o}</button>`).join("")}</div>
+        <div class="qexp">${q.e||""}</div>
+        <div class="vnav"><button class="b shw">Afficher la réponse</button><span><button class="b vp">◀</button> <button class="b vn">▶</button></span></div></div>`;
+      const reveal=()=>{el.querySelectorAll(".opt").forEach(o=>{if(+o.dataset.k===q.a)o.classList.add("right")});el.querySelector(".qexp").classList.add("show")};
+      el.querySelectorAll(".opt").forEach(o=>o.onclick=()=>{if(+o.dataset.k!==q.a)o.classList.add("wrong");reveal()});
+      el.querySelector(".shw").onclick=reveal;
+      el.querySelector(".vp").onclick=()=>{if(i>0){i--;draw()}};
+      el.querySelector(".vn").onclick=()=>{if(i<b.questions.length-1){i++;draw()}};
+    };draw();
+  },
+
+  password(el,b){
+    el.innerHTML=`<div class="box"><p style="margin-top:0">${b.intro||"Tape un mot de passe (exemple inventé, jamais ton vrai mot de passe !)"}</p>
+      <input class="bigin" type="text" placeholder="ex : garage2024" autocomplete="off" spellcheck="false">
+      <div class="meter"><i></i></div><div class="verdict" style="font-weight:800"></div>
+      <ul class="checks"></ul><div class="crack" style="color:var(--muted);font-size:.88em"></div></div>`;
+    const inp=el.querySelector("input"),bar=el.querySelector(".meter i");
+    const COMMON=["123456","password","azerty","qwerty","123456789","000000","111111","motdepasse","maroc","admin","garage","bonjour","iloveyou"];
+    const upd=()=>{const p=inp.value;
+      const r=[["Au moins 12 caractères",p.length>=12],["Une majuscule",/[A-Z]/.test(p)],["Une minuscule",/[a-z]/.test(p)],["Un chiffre",/\d/.test(p)],["Un symbole (! ? # @ …)",/[^A-Za-z0-9]/.test(p)],["Pas un mot de passe connu",!COMMON.some(c=>p.toLowerCase().includes(c))]];
+      el.querySelector(".checks").innerHTML=r.map(x=>`<li class="${x[1]?"y":"n"}">${x[1]?"✔":"✘"} ${x[0]}</li>`).join("");
+      let pool=0;if(/[a-z]/.test(p))pool+=26;if(/[A-Z]/.test(p))pool+=26;if(/\d/.test(p))pool+=10;if(/[^A-Za-z0-9]/.test(p))pool+=33;
+      let bits=p.length*Math.log2(pool||1);if(!r[5][1])bits=Math.min(bits,10);
+      const secs=Math.pow(2,bits)/1e10;
+      const human=s=>s<1?"moins d'une seconde":s<60?Math.round(s)+" secondes":s<3600?Math.round(s/60)+" minutes":s<86400?Math.round(s/3600)+" heures":s<31536000?Math.round(s/86400)+" jours":s<3.15e9?Math.round(s/31536000)+" ans":"des milliers d'années";
+      const lvl=bits<28?0:bits<45?1:bits<65?2:3;
+      const L=[["Très faible","var(--ko)",15],["Faible","#d9822b",40],["Moyen","#c9a400",70],["Fort","var(--ok)",100]][lvl];
+      bar.style.width=(p?L[2]:0)+"%";bar.style.background=L[1];
+      el.querySelector(".verdict").innerHTML=p?`Niveau : <span style="color:${L[1]}">${L[0]}</span>`:"";
+      el.querySelector(".crack").textContent=p?`Temps estimé pour le deviner avec un ordinateur puissant : ${human(secs)}.`:"";
+    };inp.oninput=upd;upd();
+  },
+
+  converter(el,b){
+    const U=["octets","Ko","Mo","Go","To"];
+    el.innerHTML=`<div class="box"><div class="convrow"><b>Convertir :</b><input type="number" min="0" step="any" value="${b.value||16}" style="width:140px"><select>${U.map((u,i)=>`<option ${u===(b.unit||"Go")?"selected":""}>${u}</option>`).join("")}</select></div><div class="convout"></div>
+      <p style="font-size:.8em;color:var(--muted);margin:.6em 0 0">${b.note||"On calcule avec 1 Ko = 1 000 octets. (En réalité, l'ordinateur compte souvent 1 Ko = 1 024 octets.)"}</p></div>`;
+    const inp=el.querySelector("input"),sel=el.querySelector("select");
+    const fmt=n=>(n>0&&n<0.000001)?n.toExponential(1).replace(".",","):n.toLocaleString("fr-FR",{maximumFractionDigits:6});
+    const upd=()=>{const v=parseFloat(inp.value)||0,k=U.indexOf(sel.value);const bytes=v*Math.pow(1000,k);
+      el.querySelector(".convout").innerHTML=U.map((u,i)=>`<div><b>${fmt(bytes/Math.pow(1000,i))}</b> ${u}</div>`).join("")};
+    inp.oninput=upd;sel.onchange=upd;upd();
+  }
+};
+route();
+</script>
+</body>
+</html>
